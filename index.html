@@ -445,7 +445,7 @@
     <h2 class="section-title">Une question ?</h2>
     <p class="contact-text">N'hésitez pas à me contacter directement pour toute question sur l'appartement, les disponibilités ou votre séjour. Je réponds généralement dans la journée.</p>
     <div class="contact-methods">
-      <a href="mailto:lennyscheuer@gmail.com" class="contact-method">✉️ lennyscheuer@gmail.com</a>
+      <a href="mailto:contact@lasuitechaumoise.fr" class="contact-method">✉️ contact@lasuitechaumoise.fr</a>
       <a href="tel:+33673574511" class="contact-method">📞 06 73 57 45 11</a>
     </div>
   </div>
@@ -632,7 +632,7 @@ function submitBooking() {
   fetch('/.netlify/functions/create-payment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount: total, arrival, departure, nights, firstName, lastName, email, phone, guests })
+    body: JSON.stringify({ total: total, arrival, departure, nights, firstName, lastName, email, phone, guests })
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
