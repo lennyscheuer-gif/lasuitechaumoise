@@ -601,7 +601,7 @@ function updateSummary() {
   if(selectedStart!==a){ selectedStart=a; } if(selectedEnd!==d){ selectedEnd=d; } renderCalendar();
 }
 
-async async function submitBooking() {
+function submitBooking() {
   const firstName = document.getElementById('firstName').value;
   const lastName = document.getElementById('lastName').value;
   const email = document.getElementById('emailInput').value;
@@ -629,13 +629,13 @@ async async function submitBooking() {
   btn.textContent = 'Redirection vers le paiement...';
   btn.disabled = true;
 
-  try {
-    const res = await fetch('/.netlify/functions/create-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: total, arrival, departure, nights, firstName, lastName, email, phone, guests })
-    });
-    const data = await res.json();
+  fetch('/.netlify/functions/create-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount: total, arrival, departure, nights, firstName, lastName, email, phone, guests })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
     if(data.url) {
       window.location.href = data.url;
     } else {
@@ -643,11 +643,12 @@ async async function submitBooking() {
       btn.textContent = 'Confirmer et payer';
       btn.disabled = false;
     }
-  } catch(err) {
+  })
+  .catch(function(err) {
     alert('Erreur de connexion. Veuillez réessayer.');
     btn.textContent = 'Confirmer et payer';
     btn.disabled = false;
-  }
+  });
 }
 
 renderCalendar();
