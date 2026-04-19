@@ -601,13 +601,53 @@ function updateSummary() {
   if(selectedStart!==a){ selectedStart=a; } if(selectedEnd!==d){ selectedEnd=d; } renderCalendar();
 }
 
-function submitBooking() {
-  const firstName=document.getElementById('firstName').value;
-  const email=document.getElementById('emailInput').value;
-  const arrival=document.getElementById('arrivalDate').value;
-  const departure=document.getElementById('departureDate').value;
-  if(!firstName||!email||!arrival||!departure){ alert('Merci de remplir toutes les informations requises.'); return; }
-  document.getElementById('confirmModal').classList.add('active');
+async async function submitBooking() {
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const email = document.getElementById('emailInput').value;
+  const phone = document.getElementById('phoneInput').value;
+  const arrival = document.getElementById('arrivalDate').value;
+  const departure = document.getElementById('departureDate').value;
+  const guests = document.getElementById('guestsCount').value;
+
+  if(!firstName || !email || !arrival || !departure) {
+    alert('Merci de remplir toutes les informations requises.');
+    return;
+  }
+
+  const da = new Date(arrival), dd = new Date(departure);
+  const nights = Math.round((dd - da) / (1000*60*60*24));
+  if(nights <= 0) { alert('Les dates ne sont pas valides.'); return; }
+
+  let total = 0;
+  for(let i=0; i<nights; i++) {
+    const cur = new Date(da); cur.setDate(da.getDate() + i);
+    total += getNightRate(toIso(cur.getFullYear(), cur.getMonth(), cur.getDate()));
+  }
+
+  const btn = document.querySelector('.booking-form .btn-primary');
+  btn.textContent = 'Redirection vers le paiement...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/.netlify/functions/create-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: total, arrival, departure, nights, firstName, lastName, email, phone, guests })
+    });
+    const data = await res.json();
+    if(data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Erreur lors de la création du paiement. Veuillez réessayer.');
+      btn.textContent = 'Confirmer et payer';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    alert('Erreur de connexion. Veuillez réessayer.');
+    btn.textContent = 'Confirmer et payer';
+    btn.disabled = false;
+  }
 }
 
 renderCalendar();
