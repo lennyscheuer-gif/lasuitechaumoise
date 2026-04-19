@@ -2,6 +2,11 @@
   publish = "."
   functions = "netlify/functions"
 
+[[redirects]]
+  from = "/calendar.ics"
+  to = "/.netlify/functions/ical-export"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
