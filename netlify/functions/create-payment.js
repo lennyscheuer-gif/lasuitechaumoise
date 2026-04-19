@@ -27,8 +27,9 @@ exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
   try {
     const body = JSON.parse(event.body);
-    const { arrival, departure, guests, firstName, lastName, email, phone, total } = body;
-    if (!arrival || !departure || !email || !total)
+    const { arrival, departure, guests, firstName, lastName, email, phone, total, amount } = body;
+    const finalTotal = total || amount;
+    if (!arrival || !departure || !email || (!total && !amount))
       return { statusCode: 400, body: JSON.stringify({ error: 'Paramètres manquants' }) };
     const description = `Séjour La Suite Chaumoise — ${arrival} au ${departure} — ${guests} personne(s) — ${firstName} ${lastName}`;
     const session = await stripeRequest('/v1/checkout/sessions', {
@@ -36,7 +37,7 @@ exports.handler = async function(event, context) {
       'line_items[0][price_data][currency]': 'eur',
       'line_items[0][price_data][product_data][name]': 'Séjour La Suite Chaumoise',
       'line_items[0][price_data][product_data][description]': description,
-      'line_items[0][price_data][unit_amount]': Math.round(total * 100),
+      'line_items[0][price_data][unit_amount]': Math.round(finalTotal * 100),
       'line_items[0][quantity]': '1',
       'mode': 'payment',
       'customer_email': email,
