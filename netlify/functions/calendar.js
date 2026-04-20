@@ -1,10 +1,14 @@
 const https = require('https');
 
-const ICAL_URL = 'https://login.smoobu.com/ical/detail/3277112.ics?s=82zX75JdRR';
+const ICAL_SOURCES = [
+  'https://www.airbnb.fr/calendar/ical/894682312121769350.ics?t=16de6dbe7f9c404a9fde75efb0425646',
+  'https://ical.booking.com/v1/export?t=40c551f3-957a-4644-9ee9-5fe24eb86144'
+];
 
-function fetchIcal(url) {
+function fetchUrl(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
+    const protocol = url.startsWith('https') ? require('https') : require('http');
+    protocol.get(url, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => resolve(data));
@@ -34,22 +38,32 @@ function parseIcal(icalData) {
     }
     if (inEvent) {
       if (line.startsWith('DTSTART')) {
-        const val = line.split(':')[1].trim().replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
-        dtstart = val.length === 10 ? val : val.substring(0, 10);
+        const val = line.split(':').slice(1).join(':').trim().replace(/(\d{4})(\d{2})(\d{2}).*/, '$1-$2-$3');
+        dtstart = val.substring(0, 10);
       }
       if (line.startsWith('DTEND')) {
-        const val = line.split(':')[1].trim().replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
-        dtend = val.length === 10 ? val : val.substring(0, 10);
+        const val = line.split(':').slice(1).join(':').trim().replace(/(\d{4})(\d{2})(\d{2}).*/, '$1-$2-$3');
+        dtend = val.substring(0, 10);
       }
     }
   }
-  return Array.from(unavailable).sort();
+  return unavailable;
 }
 
 exports.handler = async function(event, context) {
   try {
-    const icalData = await fetchIcal(ICAL_URL);
-    const unavailable = parseIcal(icalData);
+    const allUnavailable = new Set();
+    
+    for (const url of ICAL_SOURCES) {
+      try {
+        const icalData = await fetchUrl(url);
+        const dates = parseIcal(icalData);
+        dates.forEach(d => allUnavailable.add(d));
+      } catch(e) {
+        console.log('Erreur source:', url, e.message);
+      }
+    }
+
     return {
       statusCode: 200,
       headers: {
@@ -57,7 +71,7 @@ exports.handler = async function(event, context) {
         'Access-Control-Allow-Origin': '*',
         'Cache-Control': 'public, max-age=3600'
       },
-      body: JSON.stringify({ unavailable })
+      body: JSON.stringify({ unavailable: Array.from(allUnavailable).sort() })
     };
   } catch (error) {
     return {
