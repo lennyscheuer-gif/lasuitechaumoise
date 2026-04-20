@@ -651,7 +651,8 @@ function submitBooking() {
   });
 }
 
-renderCalendar();
+// Charger les dates puis afficher le calendrier
+loadUnavailableDates().then(() => renderCalendar());
 </script>
 </body>
 </html>
