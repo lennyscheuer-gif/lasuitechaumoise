@@ -1,4 +1,5 @@
 const https = require('https');
+const http = require('http');
 
 const ICAL_SOURCES = [
   'https://www.airbnb.fr/calendar/ical/894682312121769350.ics?t=16de6dbe7f9c404a9fde75efb0425646',
@@ -7,13 +8,22 @@ const ICAL_SOURCES = [
 
 function fetchUrl(url) {
   return new Promise((resolve, reject) => {
-    const protocol = url.startsWith('https') ? require('https') : require('http');
-    protocol.get(url, (res) => {
+    const client = url.startsWith('https') ? https : http;
+    const req = client.get(url, { 
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; calendar-sync/1.0)' },
+      timeout: 10000
+    }, (res) => {
+      // Suivre les redirections
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return fetchUrl(res.headers.location).then(resolve).catch(reject);
+      }
       let data = '';
       res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(data));
-      res.on('error', reject);
-    }).on('error', reject);
+      res.on('end', () => resolve({ status: res.statusCode, data }));
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+    req.end();
   });
 }
 
@@ -51,32 +61,37 @@ function parseIcal(icalData) {
 }
 
 exports.handler = async function(event, context) {
-  try {
-    const allUnavailable = new Set();
-    
-    for (const url of ICAL_SOURCES) {
-      try {
-        const icalData = await fetchUrl(url);
-        const dates = parseIcal(icalData);
-        dates.forEach(d => allUnavailable.add(d));
-      } catch(e) {
-        console.log('Erreur source:', url, e.message);
-      }
-    }
+  const allUnavailable = new Set();
+  const errors = [];
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=3600'
-      },
-      body: JSON.stringify({ unavailable: Array.from(allUnavailable).sort() })
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message, unavailable: [] })
-    };
+  for (const url of ICAL_SOURCES) {
+    try {
+      const result = await fetchUrl(url);
+      console.log('Source:', url.substring(0, 50), '- Status:', result.status, '- Length:', result.data.length);
+      if (result.status === 200 && result.data.includes('BEGIN:VCALENDAR')) {
+        const dates = parseIcal(result.data);
+        console.log('Dates trouvées:', dates.size);
+        dates.forEach(d => allUnavailable.add(d));
+      } else {
+        errors.push(`Status ${result.status} for ${url.substring(0, 50)}`);
+      }
+    } catch(e) {
+      console.log('Erreur:', url.substring(0, 50), e.message);
+      errors.push(e.message);
+    }
   }
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache'
+    },
+    body: JSON.stringify({ 
+      unavailable: Array.from(allUnavailable).sort(),
+      errors: errors,
+      count: allUnavailable.size
+    })
+  };
 };
