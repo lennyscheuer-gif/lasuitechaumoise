@@ -60,7 +60,6 @@ exports.handler = async function(event, context) {
       'deposit': 0,
       'currency': 'EUR',
       'note': 'Réservation directe via lasuitechaumoise.fr',
-      'channelId': -1
     };
 
     console.log('Création réservation Smoobu:', JSON.stringify(reservationData));
