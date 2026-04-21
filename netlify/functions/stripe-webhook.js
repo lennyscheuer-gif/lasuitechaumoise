@@ -50,7 +50,7 @@ exports.handler = async function(event, context) {
       return { statusCode: 400, body: 'Missing metadata' };
     }
     const reservationData = {
-      'apartments': { 'id': SMOOBU_APARTMENT_ID },
+      'apartments': { 'id': 3277722 },
       'arrivalDate': arrival,
       'departureDate': departure,
       'firstName': firstName || 'Invité',
