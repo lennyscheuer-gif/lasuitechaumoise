@@ -47,7 +47,7 @@ exports.handler = async function(event, context) {
     const amount = (session.amount_total || 0) / 100;
 
     const reservationData = {
-      'apartments': { 'id': 3277722 },
+      'apartmentId': 3277722,
       'arrivalDate': meta.arrival,
       'departureDate': meta.departure,
       'firstName': meta.firstName || 'Invité',
