@@ -1,7 +1,7 @@
 const https = require('https');
 
 const SMOOBU_API_KEY = process.env.SMOOBU_API_KEY;
-const SMOOBU_APARTMENT_ID = 3277112;
+const SMOOBU_APARTMENT_ID = 3277722;
 
 function smoobuRequest(method, path, data) {
   return new Promise((resolve, reject) => {
