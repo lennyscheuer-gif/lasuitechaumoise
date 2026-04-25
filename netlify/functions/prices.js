@@ -4,21 +4,20 @@ const PRICELABS_API_KEY = process.env.PRICELABS_API_KEY;
 const LISTING_ID = '11854001___1185400101';
 const MARKUP = 1.15;
 
-function fetchPriceLabs(path, method, body) {
+function fetchPriceLabs(body) {
   return new Promise((resolve, reject) => {
-    const postData = body ? JSON.stringify(body) : null;
+    const postData = JSON.stringify(body);
     const options = {
       hostname: 'api.pricelabs.co',
       port: 443,
-      path: path,
-      method: method,
+      path: '/v1/listing_prices',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': PRICELABS_API_KEY,
+        'Content-Length': Buffer.byteLength(postData)
       }
     };
-    if (postData) options.headers['Content-Length'] = Buffer.byteLength(postData);
-
     const req = https.request(options, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
@@ -28,25 +27,24 @@ function fetchPriceLabs(path, method, body) {
       });
     });
     req.on('error', reject);
-    if (postData) req.write(postData);
+    req.write(postData);
     req.end();
   });
 }
 
 exports.handler = async function(event, context) {
   try {
-    // Essayer plusieurs endpoints PriceLabs
-    const endpoints = [
-      { path: `/v1/listing_prices?listing_id=${LISTING_ID}`, method: 'GET', body: null },
-      { path: '/v1/listing_prices', method: 'POST', body: { listing_id: LISTING_ID } },
-      { path: `/v1/prices?listing_id=${LISTING_ID}`, method: 'GET', body: null },
-      { path: '/v1/prices', method: 'POST', body: { listing_id: LISTING_ID } },
+    // Tester différents formats de body
+    const bodies = [
+      { listings: [LISTING_ID] },
+      { listings: [{ id: LISTING_ID }] },
+      { listings: LISTING_ID },
     ];
 
     const results = {};
-    for (const ep of endpoints) {
-      const r = await fetchPriceLabs(ep.path, ep.method, ep.body);
-      results[`${ep.method} ${ep.path}`] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 200) };
+    for (const body of bodies) {
+      const r = await fetchPriceLabs(body);
+      results[JSON.stringify(body)] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 300) };
     }
 
     return {
