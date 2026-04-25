@@ -235,7 +235,7 @@
   <a href="#" class="nav-logo">La Suite <span>Chaumoise</span></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#appartement">L'appartement</a></li>
-    <li><a href="#tarifs">Tarifs</a></li>
+    
     <li><a href="#reservation">Réservation</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#reservation" class="nav-cta">Réserver</a></li>
@@ -346,27 +346,7 @@
 </section>
 
 <!-- TARIFS -->
-<section class="tarifs" id="tarifs">
-  <div class="tarifs-inner">
-    <p class="section-eyebrow">Tarifs</p>
-    <h2 class="section-title">Réservez en direct</h2>
-    <div class="tarifs-grid">
-      <div class="tarif-card">
-        <div class="tarif-season">Basse saison · Sept → Juin</div>
-        <div class="tarif-from">À partir de</div>
-        <div class="tarif-range">50<span class="tarif-accent">—</span>80 <span class="tarif-night">€ / nuit</span></div>
-        <div class="tarif-note">Idéal pour les week-ends prolongés, escapades en couple ou en famille hors saison.</div>
-      </div>
-      <div class="tarif-card peak">
-        <div class="tarif-season">Haute saison · Juil → Août</div>
-        <div class="tarif-from">À partir de</div>
-        <div class="tarif-range">90<span class="tarif-accent">—</span>150 <span class="tarif-night">€ / nuit</span></div>
-        <div class="tarif-note">Pleine saison vendéenne. Disponibilités limitées — anticipez votre séjour.</div>
-      </div>
-    </div>
-    <div class="tarifs-note">✦ En réservant directement sur ce site, vous bénéficiez du meilleur tarif — sans commission de plateforme.<br>Le tarif exact est calculé automatiquement selon vos dates lors de la réservation.</div>
-  </div>
-</section>
+
 
 <!-- RÉSERVATION -->
 <section class="reservation" id="reservation">
@@ -516,7 +496,22 @@ const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','A
 const DAYS_FR = ['Lu','Ma','Me','Je','Ve','Sa','Di'];
 const unavailableDates = new Set([]);
 
-// Charger les dates indisponibles depuis Smoobu via Netlify Function
+// Prix PriceLabs
+const pricelabsPrices = {};
+
+async function loadPrices() {
+  try {
+    const res = await fetch('/.netlify/functions/prices');
+    const data = await res.json();
+    if (data.prices) {
+      Object.assign(pricelabsPrices, data.prices);
+    }
+  } catch(e) {
+    console.log('Prix non disponibles:', e);
+  }
+}
+
+// Charger les dates indisponibles depuis Netlify Function
 async function loadUnavailableDates() {
   try {
     const res = await fetch('/.netlify/functions/calendar');
@@ -551,7 +546,13 @@ function renderCalendar() {
     const el = document.createElement('div'); el.className='cal-day';
     const iso = toIso(currentYear, currentMonth, d);
     const date = new Date(currentYear, currentMonth, d);
-    el.textContent = d;
+    // Afficher prix si disponible
+    const price = pricelabsPrices[iso];
+    if (price && date >= today && !unavailableDates.has(iso)) {
+      el.innerHTML = '<span style="font-size:0.75em;display:block;line-height:1.2">' + d + '</span><span style="font-size:0.6em;color:#c8a96e;display:block;line-height:1">' + price + '€</span>';
+    } else {
+      el.textContent = d;
+    }
     if(date < today || unavailableDates.has(iso)) {
       el.classList.add('unavailable');
     } else {
@@ -652,7 +653,7 @@ function submitBooking() {
 }
 
 // Charger les dates puis afficher le calendrier
-loadUnavailableDates().then(() => renderCalendar());
+Promise.all([loadUnavailableDates(), loadPrices()]).then(() => renderCalendar());
 </script>
 </body>
 </html>
