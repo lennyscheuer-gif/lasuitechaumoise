@@ -34,17 +34,13 @@ function fetchPriceLabs(body) {
 
 exports.handler = async function(event, context) {
   try {
-    // Tester différents formats de body
-    const bodies = [
-      { listings: [LISTING_ID] },
-      { listings: [{ id: LISTING_ID }] },
-      { listings: LISTING_ID },
-    ];
-
+    // Tester différents noms de PMS pour Booking
+    const pmsOptions = ['booking', 'Booking', 'booking.com', 'Booking.com', 'bookingcom'];
     const results = {};
-    for (const body of bodies) {
-      const r = await fetchPriceLabs(body);
-      results[JSON.stringify(body)] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 300) };
+
+    for (const pms of pmsOptions) {
+      const r = await fetchPriceLabs({ listings: [{ id: LISTING_ID, pms }] });
+      results[pms] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 200) };
     }
 
     return {
