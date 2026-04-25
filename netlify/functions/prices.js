@@ -4,79 +4,58 @@ const PRICELABS_API_KEY = process.env.PRICELABS_API_KEY;
 const LISTING_ID = '11854001___1185400101';
 const MARKUP = 1.15;
 
-function fetchPriceLabs() {
+function fetchPriceLabs(path, method, body) {
   return new Promise((resolve, reject) => {
-    const postData = JSON.stringify({
-      listing_id: LISTING_ID
-    });
-
+    const postData = body ? JSON.stringify(body) : null;
     const options = {
       hostname: 'api.pricelabs.co',
       port: 443,
-      path: '/v1/listing_prices',
-      method: 'POST',
+      path: path,
+      method: method,
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': PRICELABS_API_KEY,
-        'Content-Length': Buffer.byteLength(postData)
       }
     };
+    if (postData) options.headers['Content-Length'] = Buffer.byteLength(postData);
 
     const req = https.request(options, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
+      let data = '';
+      res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        try { resolve({ status: res.statusCode, data: JSON.parse(body) }); }
-        catch(e) { resolve({ status: res.statusCode, data: body }); }
+        try { resolve({ status: res.statusCode, data: JSON.parse(data) }); }
+        catch(e) { resolve({ status: res.statusCode, data: data }); }
       });
     });
     req.on('error', reject);
-    req.write(postData);
+    if (postData) req.write(postData);
     req.end();
   });
 }
 
 exports.handler = async function(event, context) {
   try {
-    const result = await fetchPriceLabs();
-    console.log('PriceLabs status:', result.status);
-    console.log('PriceLabs data:', JSON.stringify(result.data).substring(0, 500));
+    // Essayer plusieurs endpoints PriceLabs
+    const endpoints = [
+      { path: `/v1/listing_prices?listing_id=${LISTING_ID}`, method: 'GET', body: null },
+      { path: '/v1/listing_prices', method: 'POST', body: { listing_id: LISTING_ID } },
+      { path: `/v1/prices?listing_id=${LISTING_ID}`, method: 'GET', body: null },
+      { path: '/v1/prices', method: 'POST', body: { listing_id: LISTING_ID } },
+    ];
 
-    if (result.status !== 200) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'PriceLabs error', details: result.data })
-      };
-    }
-
-    const prices = {};
-    const data = result.data;
-    const priceList = data.prices || data || [];
-    
-    if (Array.isArray(priceList)) {
-      priceList.forEach(item => {
-        const date = item.date || item.d;
-        const price = item.price || item.p;
-        if (date && price) {
-          prices[date] = Math.round(price * MARKUP);
-        }
-      });
+    const results = {};
+    for (const ep of endpoints) {
+      const r = await fetchPriceLabs(ep.path, ep.method, ep.body);
+      results[`${ep.method} ${ep.path}`] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 200) };
     }
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=3600'
-      },
-      body: JSON.stringify({ prices, count: Object.keys(prices).length })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify(results, null, 2)
     };
 
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
