@@ -549,7 +549,9 @@ function renderCalendar() {
     // Afficher prix si disponible
     const price = pricelabsPrices[iso];
     if (price && date >= today && !unavailableDates.has(iso)) {
-      el.innerHTML = '<span style="font-size:0.75em;display:block;line-height:1.2">' + d + '</span><span style="font-size:0.6em;color:#c8a96e;display:block;line-height:1">' + price + '€</span>';
+      el.style.flexDirection = 'column';
+      el.style.fontSize = '0.75em';
+      el.innerHTML = '<span>' + d + '</span><span style="font-size:0.8em;color:#c8a96e;line-height:1">' + price + '€</span>';
     } else {
       el.textContent = d;
     }
@@ -582,6 +584,8 @@ document.getElementById('prevMonth').onclick = () => { currentMonth--; if(curren
 document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
 
 function getNightRate(dateStr) {
+  // Utiliser les prix PriceLabs si disponibles, sinon fallback
+  if (pricelabsPrices[dateStr]) return pricelabsPrices[dateStr];
   const m = parseInt(dateStr.split('-')[1]);
   return (m===7||m===8) ? 120 : 65;
 }
