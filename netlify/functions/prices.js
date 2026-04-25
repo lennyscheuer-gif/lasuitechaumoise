@@ -2,12 +2,11 @@ const https = require('https');
 
 const PRICELABS_API_KEY = process.env.PRICELABS_API_KEY;
 const LISTING_ID = '11854001___1185400101';
-const MARKUP = 1.15; // +15% par rapport au prix Airbnb/Booking
+const MARKUP = 1.15;
 
 function fetchPriceLabs() {
   return new Promise((resolve, reject) => {
     const postData = JSON.stringify({
-      token: PRICELABS_API_KEY,
       listing_id: LISTING_ID
     });
 
@@ -18,6 +17,7 @@ function fetchPriceLabs() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': PRICELABS_API_KEY,
         'Content-Length': Buffer.byteLength(postData)
       }
     };
@@ -49,11 +49,8 @@ exports.handler = async function(event, context) {
       };
     }
 
-    // Construire un objet date -> prix avec majoration +15%
     const prices = {};
     const data = result.data;
-
-    // PriceLabs renvoie un tableau de prix par date
     const priceList = data.prices || data || [];
     
     if (Array.isArray(priceList)) {
@@ -77,7 +74,6 @@ exports.handler = async function(event, context) {
     };
 
   } catch (error) {
-    console.error('Error:', error.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message })
