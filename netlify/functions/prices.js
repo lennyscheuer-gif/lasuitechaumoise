@@ -1,7 +1,6 @@
 const https = require('https');
 
 const PRICELABS_API_KEY = process.env.PRICELABS_API_KEY;
-const LISTING_ID = '11854001___1185400101';
 const MARKUP = 1.15;
 
 function fetchPriceLabs(body) {
@@ -34,13 +33,15 @@ function fetchPriceLabs(body) {
 
 exports.handler = async function(event, context) {
   try {
-    // Tester différents noms de PMS pour Booking
-    const pmsOptions = ['booking', 'Booking', 'booking.com', 'Booking.com', 'bookingcom'];
+    const ids = ['1854001', '11854001', '1185400101', '11854001___1185400101'];
+    const pmsOptions = ['booking', 'Booking.com'];
     const results = {};
 
-    for (const pms of pmsOptions) {
-      const r = await fetchPriceLabs({ listings: [{ id: LISTING_ID, pms }] });
-      results[pms] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 200) };
+    for (const id of ids) {
+      for (const pms of pmsOptions) {
+        const r = await fetchPriceLabs({ listings: [{ id, pms }] });
+        results[`${id} / ${pms}`] = { status: r.status, preview: JSON.stringify(r.data).substring(0, 200) };
+      }
     }
 
     return {
