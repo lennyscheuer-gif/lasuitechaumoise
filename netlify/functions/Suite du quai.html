@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Suite du Quai — Location à Les Sables-d'Olonne · La Suite Chaumoise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sand: #f2ede6;
+    --sand-dark: #e8e0d5;
+    --ocean: #2c4a5a;
+    --ocean-light: #3d6070;
+    --foam: #f9f7f4;
+    --driftwood: #8a7a6a;
+    --salt: #ffffff;
+    --ink: #1a1a1a;
+    --accent: #c8a96e;
+    --accent-light: #d4bb8a;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Jost', sans-serif; font-weight: 300; background: var(--foam); color: var(--ink); overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 3rem; background: rgba(249,247,244,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(138,122,106,0.15); }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 400; letter-spacing: 0.08em; color: var(--ocean); text-decoration: none; }
+  .nav-logo span { color: var(--accent); }
+  .nav-back { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s; }
+  .nav-back:hover { color: var(--ocean); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--driftwood); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ocean); }
+  .nav-cta { background: var(--ocean) !important; color: var(--salt) !important; padding: 0.55rem 1.4rem !important; border-radius: 2px; }
+  .nav-cta:hover { background: var(--ocean-light) !important; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--ocean); transition: all 0.3s; }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 72px; }
+  .hero-text { display: flex; flex-direction: column; justify-content: center; padding: 5rem 4rem 5rem 6rem; background: var(--foam); }
+  .hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 5vw, 4.5rem); font-weight: 300; line-height: 1.1; color: var(--ocean); margin-bottom: 1.5rem; }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-subtitle { font-size: 1rem; line-height: 1.7; color: var(--driftwood); max-width: 420px; margin-bottom: 3rem; }
+  .hero-badges { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+  .badge { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; letter-spacing: 0.05em; color: var(--ocean); background: var(--sand); padding: 0.45rem 1rem; border-radius: 2px; }
+  .hero-actions { display: flex; gap: 1rem; align-items: center; }
+  .btn-primary { background: var(--ocean); color: var(--salt); padding: 0.9rem 2.2rem; font-family: 'Jost', sans-serif; font-size: 0.82rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; border: none; cursor: pointer; border-radius: 2px; transition: all 0.25s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: var(--ocean-light); transform: translateY(-1px); }
+  .btn-ghost { color: var(--driftwood); font-size: 0.82rem; letter-spacing: 0.08em; text-decoration: none; border-bottom: 1px solid var(--driftwood); padding-bottom: 2px; transition: all 0.2s; }
+  .btn-ghost:hover { color: var(--ocean); border-color: var(--ocean); }
+  .hero-image { position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* FEATURES STRIP */
+  .features-strip { background: var(--ocean); display: flex; justify-content: center; }
+  .feature-item { flex: 1; max-width: 260px; display: flex; flex-direction: column; align-items: center; padding: 2.2rem 1.5rem; border-right: 1px solid rgba(255,255,255,0.08); text-align: center; }
+  .feature-item:last-child { border-right: none; }
+  .feature-icon { font-size: 1.5rem; margin-bottom: 0.7rem; }
+  .feature-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-light); margin-bottom: 0.3rem; }
+  .feature-value { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--salt); }
+
+  /* GALERIE */
+  .galerie { padding: 5rem 3rem; background: var(--sand); }
+  .galerie-inner { max-width: 1200px; margin: 0 auto; }
+  .section-eyebrow { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; color: var(--ocean); line-height: 1.2; margin-bottom: 2.5rem; }
+  .galerie-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 280px 280px; gap: 8px; }
+  .galerie-item { overflow: hidden; cursor: pointer; position: relative; }
+  .galerie-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; display: block; }
+  .galerie-item:hover img { transform: scale(1.04); }
+  .galerie-item.main { grid-row: 1 / 3; }
+  .galerie-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.8rem 1rem; background: linear-gradient(transparent, rgba(26,26,26,0.6)); color: var(--salt); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0; transition: opacity 0.3s; }
+  .galerie-item:hover .galerie-label { opacity: 1; }
+
+  /* ABOUT */
+  .about { padding: 6rem 3rem; background: var(--foam); }
+  .about-inner { max-width: 1200px; margin: 0 auto; }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  .about-text p { color: var(--driftwood); line-height: 1.8; font-size: 0.95rem; margin-bottom: 1.2rem; }
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .stat { padding: 1.8rem; background: var(--sand); border-left: 3px solid var(--accent); }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--ocean); line-height: 1; }
+  .stat-label { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--driftwood); margin-top: 0.4rem; text-transform: uppercase; }
+
+  /* ÉQUIPEMENTS */
+  .equipements { padding: 6rem 3rem; background: var(--sand); }
+  .equip-inner { max-width: 1200px; margin: 0 auto; }
+  .equip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(138,122,106,0.2); margin-top: 3rem; border: 1px solid rgba(138,122,106,0.2); }
+  .equip-item { background: var(--sand); padding: 1.8rem 2rem; display: flex; align-items: center; gap: 1rem; }
+  .equip-emoji { font-size: 1.4rem; }
+  .equip-name { font-size: 0.88rem; color: var(--ocean); font-weight: 400; }
+  .equip-detail { font-size: 0.75rem; color: var(--driftwood); margin-top: 0.2rem; }
+
+  /* TARIFS */
+  .tarifs { padding: 6rem 3rem; background: var(--foam); }
+  .tarifs-inner { max-width: 900px; margin: 0 auto; }
+  .tarifs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .tarif-card { padding: 2.5rem; border: 1px solid rgba(138,122,106,0.25); }
+  .tarif-card.peak { background: var(--ocean); border-color: var(--ocean); }
+  .tarif-season { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 1.2rem; }
+  .tarif-card.peak .tarif-season, .tarif-card.peak .tarif-from, .tarif-card.peak .tarif-note { color: rgba(255,255,255,0.7); }
+  .tarif-card.peak .tarif-range { color: var(--salt); }
+  .tarif-card.peak .tarif-accent { color: var(--accent-light); }
+  .tarif-from { font-size: 0.8rem; color: var(--driftwood); margin-bottom: 0.3rem; }
+  .tarif-range { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; color: var(--ocean); line-height: 1; }
+  .tarif-accent { color: var(--accent); }
+  .tarif-night { font-size: 0.75rem; color: var(--driftwood); }
+  .tarif-note { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(138,122,106,0.2); font-size: 0.8rem; color: var(--driftwood); line-height: 1.6; }
+  .tarif-card.peak .tarif-note { border-top-color: rgba(255,255,255,0.15); }
+  .tarifs-note { margin-top: 2rem; padding: 1.5rem; background: var(--sand); font-size: 0.82rem; color: var(--driftwood); line-height: 1.7; text-align: center; }
+
+  /* RÉSERVATION */
+  .reservation { padding: 6rem 3rem; background: var(--sand); }
+  .reservation-inner { max-width: 1000px; margin: 0 auto; }
+  .reservation-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; margin-top: 3rem; align-items: start; }
+  .calendar-widget { background: var(--foam); border: 1px solid rgba(138,122,106,0.2); padding: 1.8rem; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .cal-nav { background: none; border: none; cursor: pointer; color: var(--driftwood); font-size: 1.2rem; padding: 0.3rem 0.6rem; transition: color 0.2s; }
+  .cal-nav:hover { color: var(--ocean); }
+  .cal-month { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--ocean); letter-spacing: 0.05em; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-day-name { text-align: center; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); padding: 0.4rem 0; margin-bottom: 0.2rem; }
+  .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; cursor: pointer; border-radius: 2px; transition: all 0.15s; color: var(--ink); }
+  .cal-day:hover:not(.unavailable):not(.empty) { background: var(--ocean); color: var(--salt); }
+  .cal-day.today { font-weight: 500; color: var(--accent); }
+  .cal-day.unavailable { background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(138,122,106,0.12) 3px, rgba(138,122,106,0.12) 6px); color: var(--driftwood); cursor: not-allowed; font-size: 0.75rem; text-decoration: line-through; }
+  .cal-day.selected { background: var(--ocean); color: var(--salt); }
+  .cal-day.in-range { background: rgba(44,74,90,0.12); color: var(--ocean); }
+  .cal-day.empty { cursor: default; }
+  .cal-legend { display: flex; gap: 1.5rem; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(138,122,106,0.15); }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--driftwood); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 2px; }
+  .legend-dot.available { background: var(--ocean); }
+  .legend-dot.unavailable { background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(138,122,106,0.4) 2px, rgba(138,122,106,0.4) 4px); border: 1px solid rgba(138,122,106,0.3); }
+
+  /* BOOKING FORM */
+  .booking-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .booking-form h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ocean); font-weight: 300; margin-bottom: 0.5rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--driftwood); }
+  .form-group input, .form-group select, .form-group textarea { padding: 0.8rem 1rem; border: 1px solid rgba(138,122,106,0.3); background: var(--foam); font-family: 'Jost', sans-serif; font-size: 0.88rem; color: var(--ink); border-radius: 2px; transition: border-color 0.2s; outline: none; -webkit-appearance: none; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--ocean); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .price-summary { background: var(--ocean); padding: 1.5rem; color: var(--salt); margin-top: 0.5rem; }
+  .price-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: rgba(255,255,255,0.75); margin-bottom: 0.5rem; }
+  .price-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 0.5rem; }
+  .price-total-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+  .price-total-amount { font-family: 'Cormorant Garamond', serif; font-size: 2rem; }
+  .price-total-amount span { font-size: 0.9rem; font-family: 'Jost', sans-serif; color: rgba(255,255,255,0.7); }
+  .stripe-note { font-size: 0.72rem; color: var(--driftwood); display: flex; align-items: center; gap: 0.4rem; }
+
+  /* RÈGLEMENT */
+  .reglement { padding: 6rem 3rem; background: var(--foam); }
+  .reglement-inner { max-width: 1000px; margin: 0 auto; }
+  .regles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: rgba(138,122,106,0.15); border: 1px solid rgba(138,122,106,0.15); margin-top: 3rem; }
+  .regle-item { background: var(--foam); padding: 2rem; display: flex; gap: 1.2rem; align-items: flex-start; }
+  .regle-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .regle-title { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ocean); margin-bottom: 0.4rem; }
+  .regle-text { font-size: 0.85rem; color: var(--driftwood); line-height: 1.6; }
+
+  /* CONTACT */
+  .contact { padding: 6rem 3rem; background: var(--ocean); }
+  .contact-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .contact .section-title { color: var(--salt); }
+  .contact .section-eyebrow { color: var(--accent-light); }
+  .contact-text { color: rgba(255,255,255,0.65); font-size: 0.92rem; line-height: 1.8; margin-bottom: 2.5rem; }
+  .contact-methods { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .contact-method { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--salt); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.05em; transition: all 0.2s; border-radius: 2px; }
+  .contact-method:hover { background: rgba(255,255,255,0.15); border-color: var(--accent-light); }
+
+  /* FOOTER */
+  footer { background: #121c22; padding: 2.5rem 3rem; display: flex; align-items: center; justify-content: space-between; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy { font-size: 0.72rem; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a { font-size: 0.72rem; color: rgba(255,255,255,0.35); text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  .footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+  /* LIGHTBOX */
+  .lightbox { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(18,28,34,0.95); align-items: center; justify-content: center; }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; }
+  .lightbox-close { position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 2rem; cursor: pointer; }
+  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.6); font-size: 2rem; cursor: pointer; padding: 1rem; }
+  .lightbox-nav.prev { left: 1rem; }
+  .lightbox-nav.next { right: 1rem; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(26,26,26,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--foam); padding: 3rem; max-width: 480px; width: 90%; text-align: center; }
+  .modal-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--ocean); margin-bottom: 0.8rem; }
+  .modal-text { color: var(--driftwood); font-size: 0.9rem; line-height: 1.7; }
+  .modal-close { margin-top: 2rem; background: var(--ocean); color: var(--salt); border: none; padding: 0.8rem 2rem; cursor: pointer; font-family: 'Jost', sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 2px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-eyebrow { animation: fadeUp 0.6s ease both; }
+  .hero-title { animation: fadeUp 0.6s 0.1s ease both; }
+  .hero-subtitle { animation: fadeUp 0.6s 0.2s ease both; }
+  .hero-badges { animation: fadeUp 0.6s 0.3s ease both; }
+  .hero-actions { animation: fadeUp 0.6s 0.4s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-text { padding: 4rem 1.5rem 3rem; }
+    .hero-image { height: 70vw; }
+    .features-strip { flex-wrap: wrap; }
+    .galerie-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .galerie-item.main { grid-row: auto; grid-column: 1 / -1; height: 250px; }
+    .galerie-item { height: 200px; }
+    .about-grid, .reservation-grid, .tarifs-grid, .regles-grid { grid-template-columns: 1fr; }
+    .equip-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
+  @media (max-width: 500px) {
+    .equip-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .galerie-grid { grid-template-columns: 1fr; }
+    .galerie-item.main, .galerie-item { height: 220px; grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">La Suite <span>Chaumoise</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/">← Nos logements</a></li>
+    <li><a href="#appartement">L'appartement</a></li>
+    <li><a href="#reservation">Réservation</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#reservation" class="nav-cta">Réserver</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<div class="hero" style="padding-top:72px">
+  <div class="hero-text">
+    <p class="hero-eyebrow">Les Sables-d'Olonne · Quai de La Chaume</p>
+    <h1 class="hero-title">La Suite<br><em>du Quai</em></h1>
+    <p class="hero-subtitle">Studio cosy et raffiné face au quai de La Chaume. Verrières métalliques sur-mesure, cuisine terracotta, lit Emma 160 cm — une adresse pensée comme une suite d'hôtel boutique. Réservez directement, sans commission.</p>
+    <div class="hero-badges">
+      <span class="badge">📍 51 rue Joseph Bénatier</span>
+      <span class="badge">🏠 20 m²</span>
+      <span class="badge">👥 2 personnes</span>
+      <span class="badge">🚗 Parking copropriété</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#reservation" class="btn-primary">Vérifier les disponibilités</a>
+      <a href="#appartement" class="btn-ghost">Découvrir l'appartement</a>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="photos/suite-du-quai/IMG_2900.jpeg" alt="La Suite du Quai — vue d'ensemble" />
+  </div>
+</div>
+
+<!-- FEATURES STRIP -->
+<div class="features-strip">
+  <div class="feature-item">
+    <div class="feature-icon">🛏</div>
+    <div class="feature-label">Literie</div>
+    <div class="feature-value">Lit Emma 160 cm</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">🚗</div>
+    <div class="feature-label">Stationnement</div>
+    <div class="feature-value">Parking copropriété</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">☕</div>
+    <div class="feature-label">Café</div>
+    <div class="feature-value">Machine Nespresso</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">📶</div>
+    <div class="feature-label">Connexion</div>
+    <div class="feature-value">Wifi haut débit</div>
+  </div>
+</div>
+
+<!-- GALERIE -->
+<section class="galerie" id="appartement">
+  <div class="galerie-inner">
+    <p class="section-eyebrow">Galerie photos</p>
+    <h2 class="section-title">L'appartement<br>en images</h2>
+    <div class="galerie-grid" id="galerieGrid">
+      <div class="galerie-item main" onclick="openLightbox(0)">
+        <img src="photos/suite-du-quai/IMG_2910.jpeg" alt="Vue d'ensemble — chambre et salon" />
+        <div class="galerie-label">Vue d'ensemble</div>
+      </div>
+      <div class="galerie-item" onclick="openLightbox(1)">
+        <img src="photos/suite-du-quai/IMG_2900.jpeg" alt="Espace nuit" />
+        <div class="galerie-label">Espace nuit</div>
+      </div>
+      <div class="galerie-item" onclick="openLightbox(2)">
+        <img src="photos/suite-du-quai/IMG_2904.jpeg" alt="Salon" />
+        <div class="galerie-label">Salon</div>
+      </div>
+      <div class="galerie-item" onclick="openLightbox(3)">
+        <img src="photos/suite-du-quai/IMG_2905.jpeg" alt="Coin repas et TV" />
+        <div class="galerie-label">Coin repas</div>
+      </div>
+      <div class="galerie-item" onclick="openLightbox(4)">
+        <img src="photos/suite-du-quai/IMG_2892.jpeg" alt="Cuisine terracotta" />
+        <div class="galerie-label">Cuisine</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav prev" onclick="navLightbox(-1)">‹</button>
+  <img id="lightboxImg" src="" alt="" />
+  <button class="lightbox-nav next" onclick="navLightbox(1)">›</button>
+</div>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="about-inner">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-eyebrow">L'appartement</p>
+        <h2 class="section-title">Une suite<br>pensée pour deux</h2>
+        <p>La Suite du Quai est un studio de 20 m² entièrement rénové, situé au 51 rue Joseph Bénatier à Les Sables-d'Olonne, à deux pas du quai de La Chaume. Chaque détail a été pensé pour offrir le confort d'une suite d'hôtel boutique.</p>
+        <p>La décoration mêle douceur et caractère : palette rose, terracotta et vert sauge, verrières métalliques fabriquées sur-mesure, cuisine en façades terracotta cannelées avec plan marbre, fauteuils bouclette. Un espace où il fait bon se poser après une journée de plage.</p>
+        <p>Le parking en copropriété, juste derrière le logement, est inclus dans la location — un vrai confort en saison estivale à Les Sables-d'Olonne.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-num">20</div>
+          <div class="stat-label">m² rénovés</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Personnes max</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">160</div>
+          <div class="stat-label">cm · Lit Emma</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">0%</div>
+          <div class="stat-label">Commission</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ÉQUIPEMENTS -->
+<section class="equipements">
+  <div class="equip-inner">
+    <p class="section-eyebrow">Ce qui vous attend</p>
+    <h2 class="section-title">Équipements</h2>
+    <div class="equip-grid">
+      <div class="equip-item">
+        <span class="equip-emoji">🛏</span>
+        <div>
+          <div class="equip-name">Lit Emma 160 cm</div>
+          <div class="equip-detail">Matelas haut de gamme, literie incluse</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">🍳</span>
+        <div>
+          <div class="equip-name">Cuisine équipée</div>
+          <div class="equip-detail">Plaque induction, hotte, micro-ondes, réfrigérateur</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">☕</span>
+        <div>
+          <div class="equip-name">Nespresso</div>
+          <div class="equip-detail">Machine à café + toaster</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">📺</span>
+        <div>
+          <div class="equip-name">TV murale</div>
+          <div class="equip-detail">Télévision à écran plat</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">📶</span>
+        <div>
+          <div class="equip-name">Wifi haut débit</div>
+          <div class="equip-detail">Connexion fibre incluse</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">🚗</span>
+        <div>
+          <div class="equip-name">Parking privé</div>
+          <div class="equip-detail">Emplacement copropriété, juste derrière</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">🚿</span>
+        <div>
+          <div class="equip-name">Salle de bain</div>
+          <div class="equip-detail">Douche, WC, vasque</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">🪟</span>
+        <div>
+          <div class="equip-name">Verrières sur-mesure</div>
+          <div class="equip-detail">Fabrication artisanale en métal</div>
+        </div>
+      </div>
+      <div class="equip-item">
+        <span class="equip-emoji">🗝</span>
+        <div>
+          <div class="equip-name">Accès autonome</div>
+          <div class="equip-detail">Boîte à clé — arrivée flexible</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section class="tarifs">
+  <div class="tarifs-inner">
+    <p class="section-eyebrow">Tarification</p>
+    <h2 class="section-title">Nos tarifs</h2>
+    <div class="tarifs-grid">
+      <div class="tarif-card">
+        <div class="tarif-season">Basse saison</div>
+        <div class="tarif-from">À partir de</div>
+        <div class="tarif-range"><span class="tarif-accent" id="lowSeasonPrice">—</span></div>
+        <div class="tarif-night">la nuit · tarifs PriceLabs</div>
+        <div class="tarif-note">Octobre à mai (hors vacances scolaires). Tarifs ajustés dynamiquement selon la demande.</div>
+      </div>
+      <div class="tarif-card peak">
+        <div class="tarif-season">Haute saison</div>
+        <div class="tarif-from">À partir de</div>
+        <div class="tarif-range"><span id="highSeasonPrice">—</span></div>
+        <div class="tarif-night" style="color:rgba(255,255,255,0.55)">la nuit · été & vacances</div>
+        <div class="tarif-note">Juin à septembre, vacances scolaires. Tarifs mis à jour en temps réel.</div>
+      </div>
+    </div>
+    <div class="tarifs-note">
+      💡 Les tarifs affichés sur ce site incluent nos frais de gestion. En réservant directement ici, vous évitez les frais de service des plateformes (jusqu'à 15% d'économie).
+    </div>
+  </div>
+</section>
+
+<!-- RÉSERVATION -->
+<section class="reservation" id="reservation">
+  <div class="reservation-inner">
+    <p class="section-eyebrow">Disponibilités & réservation</p>
+    <h2 class="section-title">Réservez directement</h2>
+    <div class="reservation-grid">
+
+      <!-- Calendrier -->
+      <div class="calendar-widget">
+        <div class="cal-header">
+          <button class="cal-nav" id="prevMonth">‹</button>
+          <span class="cal-month" id="calMonth">Chargement...</span>
+          <button class="cal-nav" id="nextMonth">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
+          <div class="legend-item"><div class="legend-dot unavailable"></div> Indisponible</div>
+        </div>
+        <div id="priceTooltip" style="margin-top:1rem;padding:0.8rem;background:var(--sand);font-size:0.82rem;color:var(--ocean);display:none;"></div>
+      </div>
+
+      <!-- Formulaire -->
+      <div class="booking-form">
+        <h3>Réserver La Suite du Quai</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Arrivée</label>
+            <input type="date" id="checkin" />
+          </div>
+          <div class="form-group">
+            <label>Départ</label>
+            <input type="date" id="checkout" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Voyageurs</label>
+          <select id="guests">
+            <option value="1">1 voyageur</option>
+            <option value="2" selected>2 voyageurs</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="firstName" placeholder="Marie" />
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="lastName" placeholder="Dupont" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="marie@exemple.fr" />
+        </div>
+        <div class="form-group">
+          <label>Téléphone</label>
+          <input type="tel" id="phone" placeholder="+33 6 00 00 00 00" />
+        </div>
+        <div class="form-group">
+          <label>Message (optionnel)</label>
+          <textarea id="message" placeholder="Heure d'arrivée, demande particulière..."></textarea>
+        </div>
+
+        <div class="price-summary" id="priceSummary" style="display:none">
+          <div class="price-row"><span>Durée du séjour</span><span id="summaryNights">—</span></div>
+          <div class="price-row"><span>Prix par nuit</span><span id="summaryPricePerNight">—</span></div>
+          <div class="price-row"><span>Frais de ménage</span><span id="summaryFees">—</span></div>
+          <div class="price-total">
+            <span class="price-total-label">Total</span>
+            <span class="price-total-amount" id="summaryTotal">— <span>€</span></span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="payBtn" style="width:100%;justify-content:center;opacity:0.4;pointer-events:none">
+          Procéder au paiement sécurisé
+        </button>
+        <div class="stripe-note">🔒 Paiement sécurisé par Stripe — vos données sont protégées</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RÈGLEMENT -->
+<section class="reglement">
+  <div class="reglement-inner">
+    <p class="section-eyebrow">Informations pratiques</p>
+    <h2 class="section-title">À savoir avant<br>votre séjour</h2>
+    <div class="regles-grid">
+      <div class="regle-item">
+        <span class="regle-icon">🕐</span>
+        <div>
+          <div class="regle-title">Arrivée & départ</div>
+          <div class="regle-text">Check-in à partir de 15h, check-out avant 11h. Accès autonome par boîte à clé — arrivée flexible possible.</div>
+        </div>
+      </div>
+      <div class="regle-item">
+        <span class="regle-icon">🚭</span>
+        <div>
+          <div class="regle-title">Non-fumeur</div>
+          <div class="regle-text">Logement strictement non-fumeur. Fumer à l'extérieur uniquement.</div>
+        </div>
+      </div>
+      <div class="regle-item">
+        <span class="regle-icon">🐾</span>
+        <div>
+          <div class="regle-title">Animaux</div>
+          <div class="regle-text">Animaux non acceptés dans ce logement.</div>
+        </div>
+      </div>
+      <div class="regle-item">
+        <span class="regle-icon">🔕</span>
+        <div>
+          <div class="regle-title">Nuisances sonores</div>
+          <div class="regle-text">Respect du voisinage demandé après 22h. Copropriété résidentielle calme.</div>
+        </div>
+      </div>
+      <div class="regle-item">
+        <span class="regle-icon">🧹</span>
+        <div>
+          <div class="regle-title">Ménage de fin de séjour</div>
+          <div class="regle-text">Ménage inclus dans le prix. Merci de laisser le logement dans un état correct à votre départ.</div>
+        </div>
+      </div>
+      <div class="regle-item">
+        <span class="regle-icon">💳</span>
+        <div>
+          <div class="regle-title">Paiement & annulation</div>
+          <div class="regle-text">Paiement intégral à la réservation par carte bancaire. Politique d'annulation communiquée à la réservation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <p class="section-eyebrow">Une question ?</p>
+    <h2 class="section-title">Contactez-nous</h2>
+    <p class="contact-text">Pour toute demande de disponibilité ou question sur La Suite du Quai, écrivez-nous directement.</p>
+    <div class="contact-methods">
+      <a href="mailto:contact@lasuitechaumoise.fr" class="contact-method">✉ contact@lasuitechaumoise.fr</a>
+      <a href="tel:+33XXXXXXXXX" class="contact-method">📞 Nous appeler</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="/" class="footer-logo">La Suite <span>Chaumoise</span></a>
+  <span class="footer-copy">© 2025 La Suite Chaumoise — Les Sables-d'Olonne</span>
+  <div class="footer-links">
+    <a href="/">Accueil</a>
+    <a href="/pigeonnier.html">Le Pigeonnier</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon" id="modalIcon">✓</div>
+    <h3 class="modal-title" id="modalTitle">Réservation confirmée</h3>
+    <p class="modal-text" id="modalText"></p>
+    <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('active')">Fermer</button>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+const PROPERTY_ID = 'SMOOBU_ID_SUITE_DU_QUAI'; // À remplacer après création dans Smoobu
+const PRICELABS_LISTING_ID = 'PRICELABS_ID_SUITE_DU_QUAI'; // À remplacer
+const CLEANING_FEE = 40;
+
+// ─── CALENDRIER ───────────────────────────────────────────────
+const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const days = ['L','M','M','J','V','S','D'];
+let currentDate = new Date();
+let unavailableDates = new Set();
+let priceMap = {};
+let selectedCheckin = null;
+let selectedCheckout = null;
+let currentLightboxIndex = 0;
+
+const photos = [
+  'photos/suite-du-quai/IMG_2910.jpeg',
+  'photos/suite-du-quai/IMG_2900.jpeg',
+  'photos/suite-du-quai/IMG_2904.jpeg',
+  'photos/suite-du-quai/IMG_2905.jpeg',
+  'photos/suite-du-quai/IMG_2892.jpeg',
+  'photos/suite-du-quai/IMG_2893.jpeg',
+  'photos/suite-du-quai/IMG_2908.jpeg',
+  'photos/suite-du-quai/IMG_2859.jpeg',
+];
+
+async function loadCalendarData() {
+  try {
+    const res = await fetch(`/.netlify/functions/calendar?property=suite-du-quai`);
+    const data = await res.json();
+    if (data.unavailable) {
+      unavailableDates = new Set(data.unavailable);
+    }
+  } catch(e) { console.log('Calendrier indisponible', e); }
+
+  try {
+    const res = await fetch(`/.netlify/functions/prices?listing_id=${PRICELABS_LISTING_ID}&pms=airbnb`);
+    const data = await res.json();
+    if (data.prices) {
+      data.prices.forEach(p => { priceMap[p.date] = p.price; });
+      updateSeasonPrices();
+    }
+  } catch(e) { console.log('Prix indisponibles', e); }
+
+  renderCalendar();
+}
+
+function updateSeasonPrices() {
+  const vals = Object.values(priceMap).filter(v => v > 0);
+  if (!vals.length) return;
+  const sorted = [...vals].sort((a,b) => a-b);
+  const low = Math.round(sorted[Math.floor(sorted.length * 0.1)]);
+  const high = Math.round(sorted[Math.floor(sorted.length * 0.85)]);
+  const el1 = document.getElementById('lowSeasonPrice');
+  const el2 = document.getElementById('highSeasonPrice');
+  if (el1) el1.textContent = low + ' €';
+  if (el2) el2.textContent = high + ' €';
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  const monthLabel = document.getElementById('calMonth');
+  if (!grid || !monthLabel) return;
+  grid.innerHTML = '';
+  monthLabel.textContent = months[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+
+  days.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-day-name';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const startDow = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  for (let i = 0; i < startDow; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), d);
+    const dateStr = date.toISOString().split('T')[0];
+    const el = document.createElement('div');
+    el.textContent = d;
+    let cls = 'cal-day';
+    if (date < today) { cls += ' unavailable'; }
+    else if (unavailableDates.has(dateStr)) { cls += ' unavailable'; }
+    else if (dateStr === today.toISOString().split('T')[0]) { cls += ' today'; }
+    if (selectedCheckin && dateStr === selectedCheckin) cls += ' selected';
+    if (selectedCheckout && dateStr === selectedCheckout) cls += ' selected';
+    if (selectedCheckin && selectedCheckout && dateStr > selectedCheckin && dateStr < selectedCheckout) cls += ' in-range';
+    el.className = cls;
+
+    if (!cls.includes('unavailable')) {
+      el.addEventListener('click', () => selectDate(dateStr));
+      el.addEventListener('mouseenter', () => {
+        const price = priceMap[dateStr];
+        const tooltip = document.getElementById('priceTooltip');
+        if (price && tooltip) {
+          tooltip.style.display = 'block';
+          tooltip.textContent = `${dateStr} — ${price} €/nuit`;
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        const tooltip = document.getElementById('priceTooltip');
+        if (tooltip) tooltip.style.display = 'none';
+      });
+    }
+    grid.appendChild(el);
+  }
+}
+
+function selectDate(dateStr) {
+  if (!selectedCheckin || (selectedCheckin && selectedCheckout)) {
+    selectedCheckin = dateStr;
+    selectedCheckout = null;
+    document.getElementById('checkin').value = dateStr;
+    document.getElementById('checkout').value = '';
+  } else {
+    if (dateStr <= selectedCheckin) {
+      selectedCheckin = dateStr;
+      document.getElementById('checkin').value = dateStr;
+    } else {
+      selectedCheckout = dateStr;
+      document.getElementById('checkout').value = dateStr;
+      updatePriceSummary();
+    }
+  }
+  renderCalendar();
+}
+
+function updatePriceSummary() {
+  if (!selectedCheckin || !selectedCheckout) return;
+  const start = new Date(selectedCheckin);
+  const end = new Date(selectedCheckout);
+  const nights = Math.round((end - start) / 86400000);
+  if (nights <= 0) return;
+
+  let total = 0;
+  let cur = new Date(start);
+  for (let i = 0; i < nights; i++) {
+    const ds = cur.toISOString().split('T')[0];
+    total += priceMap[ds] || 80;
+    cur.setDate(cur.getDate() + 1);
+  }
+  const pricePerNight = Math.round(total / nights);
+  const grandTotal = total + CLEANING_FEE;
+
+  document.getElementById('priceSummary').style.display = 'block';
+  document.getElementById('summaryNights').textContent = nights + ' nuit' + (nights > 1 ? 's' : '');
+  document.getElementById('summaryPricePerNight').textContent = pricePerNight + ' €/nuit (moy.)';
+  document.getElementById('summaryFees').textContent = CLEANING_FEE + ' €';
+  document.getElementById('summaryTotal').innerHTML = grandTotal + ' <span>€</span>';
+
+  const payBtn = document.getElementById('payBtn');
+  payBtn.style.opacity = '1';
+  payBtn.style.pointerEvents = 'auto';
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+});
+document.getElementById('nextMonth').addEventListener('click', () => {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+});
+
+document.getElementById('checkin').addEventListener('change', e => {
+  selectedCheckin = e.target.value;
+  renderCalendar();
+});
+document.getElementById('checkout').addEventListener('change', e => {
+  selectedCheckout = e.target.value;
+  renderCalendar();
+  updatePriceSummary();
+});
+
+// ─── PAIEMENT STRIPE ──────────────────────────────────────────
+document.getElementById('payBtn').addEventListener('click', async () => {
+  const checkin = document.getElementById('checkin').value;
+  const checkout = document.getElementById('checkout').value;
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const guests = document.getElementById('guests').value;
+  const message = document.getElementById('message').value.trim();
+
+  if (!checkin || !checkout || !firstName || !lastName || !email) {
+    showModal('⚠️', 'Informations manquantes', 'Merci de remplir au minimum les dates, votre prénom, nom et email.');
+    return;
+  }
+
+  const start = new Date(checkin);
+  const end = new Date(checkout);
+  const nights = Math.round((end - start) / 86400000);
+  let totalAmount = 0;
+  let cur = new Date(start);
+  for (let i = 0; i < nights; i++) {
+    const ds = cur.toISOString().split('T')[0];
+    totalAmount += priceMap[ds] || 80;
+    cur.setDate(cur.getDate() + 1);
+  }
+  totalAmount += CLEANING_FEE;
+
+  try {
+    const res = await fetch('/.netlify/functions/create-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: Math.round(totalAmount * 100),
+        currency: 'eur',
+        checkin, checkout, guests,
+        guestName: firstName + ' ' + lastName,
+        guestEmail: email,
+        guestPhone: phone,
+        message,
+        propertyId: PROPERTY_ID,
+        propertyName: 'La Suite du Quai',
+        nights,
+      })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showModal('❌', 'Erreur de paiement', data.error || 'Une erreur est survenue. Merci de réessayer ou de nous contacter.');
+    }
+  } catch(e) {
+    showModal('❌', 'Erreur de connexion', 'Impossible de contacter le serveur de paiement. Merci de réessayer.');
+  }
+});
+
+// ─── LIGHTBOX ─────────────────────────────────────────────────
+function openLightbox(index) {
+  currentLightboxIndex = index;
+  document.getElementById('lightboxImg').src = photos[index];
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function navLightbox(dir) {
+  currentLightboxIndex = (currentLightboxIndex + dir + photos.length) % photos.length;
+  document.getElementById('lightboxImg').src = photos[currentLightboxIndex];
+}
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLightbox();
+});
+
+// ─── MODAL ────────────────────────────────────────────────────
+function showModal(icon, title, text) {
+  document.getElementById('modalIcon').textContent = icon;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+// ─── HAMBURGER ────────────────────────────────────────────────
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+  const isOpen = navLinks.style.display === 'flex';
+  navLinks.style.display = isOpen ? 'none' : 'flex';
+  if (!isOpen) {
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.position = 'absolute';
+    navLinks.style.top = '72px';
+    navLinks.style.left = '0';
+    navLinks.style.right = '0';
+    navLinks.style.background = 'rgba(249,247,244,0.97)';
+    navLinks.style.padding = '1.5rem 2rem';
+    navLinks.style.gap = '1.2rem';
+    navLinks.style.borderBottom = '1px solid rgba(138,122,106,0.15)';
+  }
+});
+
+// ─── INIT ─────────────────────────────────────────────────────
+loadCalendarData();
+</script>
+
+</body>
+</html>
