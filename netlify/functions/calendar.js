@@ -1,97 +1,72 @@
-const https = require('https');
-const http = require('http');
+const fetch = require('node-fetch');
+const ical = require('node-ical');
 
-const ICAL_SOURCES = [
-  'https://www.airbnb.fr/calendar/ical/894682312121769350.ics?t=16de6dbe7f9c404a9fde75efb0425646',
-  'https://ical.booking.com/v1/export?t=40c551f3-957a-4644-9ee9-5fe24eb86144'
-];
+// iCal URLs — à renseigner directement depuis Airbnb et Booking
+const ICAL_URLS = {
+  pigeonnier: {
+    airbnb: process.env.ICAL_PIGEONNIER_AIRBNB || '',
+    booking: process.env.ICAL_PIGEONNIER_BOOKING || '',
+  },
+  'suite-du-quai': {
+    airbnb: process.env.ICAL_SUITE_AIRBNB || '',
+    booking: process.env.ICAL_SUITE_BOOKING || '',
+  }
+};
 
-function fetchUrl(url) {
-  return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
-    const req = client.get(url, { 
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; calendar-sync/1.0)' },
-      timeout: 10000
-    }, (res) => {
-      // Suivre les redirections
-      if (res.statusCode === 301 || res.statusCode === 302) {
-        return fetchUrl(res.headers.location).then(resolve).catch(reject);
-      }
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve({ status: res.statusCode, data }));
-    });
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
-    req.end();
-  });
-}
-
-function parseIcal(icalData) {
+async function getUnavailableDates(urls) {
   const unavailable = new Set();
-  const lines = icalData.split(/\r?\n/);
-  let inEvent = false;
-  let dtstart = null, dtend = null;
-
-  for (const line of lines) {
-    if (line.startsWith('BEGIN:VEVENT')) { inEvent = true; dtstart = null; dtend = null; }
-    if (line.startsWith('END:VEVENT')) {
-      if (dtstart && dtend) {
-        let current = new Date(dtstart);
-        const end = new Date(dtend);
-        while (current < end) {
-          unavailable.add(current.toISOString().split('T')[0]);
-          current.setDate(current.getDate() + 1);
+  
+  for (const [source, url] of Object.entries(urls)) {
+    if (!url) continue;
+    try {
+      const res = await fetch(url, { timeout: 8000 });
+      const text = await res.text();
+      const data = ical.parseICS(text);
+      
+      for (const event of Object.values(data)) {
+        if (event.type !== 'VEVENT') continue;
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        // Bloquer chaque jour de la réservation
+        const cur = new Date(start);
+        while (cur < end) {
+          unavailable.add(cur.toISOString().split('T')[0]);
+          cur.setDate(cur.getDate() + 1);
         }
       }
-      inEvent = false;
-    }
-    if (inEvent) {
-      if (line.startsWith('DTSTART')) {
-        const val = line.split(':').slice(1).join(':').trim().replace(/(\d{4})(\d{2})(\d{2}).*/, '$1-$2-$3');
-        dtstart = val.substring(0, 10);
-      }
-      if (line.startsWith('DTEND')) {
-        const val = line.split(':').slice(1).join(':').trim().replace(/(\d{4})(\d{2})(\d{2}).*/, '$1-$2-$3');
-        dtend = val.substring(0, 10);
-      }
+    } catch(e) {
+      console.log(`Erreur iCal ${source}:`, e.message);
     }
   }
-  return unavailable;
+  
+  return Array.from(unavailable).sort();
 }
 
-exports.handler = async function(event, context) {
-  const allUnavailable = new Set();
-  const errors = [];
-
-  for (const url of ICAL_SOURCES) {
-    try {
-      const result = await fetchUrl(url);
-      console.log('Source:', url.substring(0, 50), '- Status:', result.status, '- Length:', result.data.length);
-      if (result.status === 200 && result.data.includes('BEGIN:VCALENDAR')) {
-        const dates = parseIcal(result.data);
-        console.log('Dates trouvées:', dates.size);
-        dates.forEach(d => allUnavailable.add(d));
-      } else {
-        errors.push(`Status ${result.status} for ${url.substring(0, 50)}`);
-      }
-    } catch(e) {
-      console.log('Erreur:', url.substring(0, 50), e.message);
-      errors.push(e.message);
-    }
+exports.handler = async (event) => {
+  const property = event.queryStringParameters?.property || 'pigeonnier';
+  const urls = ICAL_URLS[property];
+  
+  if (!urls) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Propriété inconnue' })
+    };
   }
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'no-cache'
-    },
-    body: JSON.stringify({ 
-      unavailable: Array.from(allUnavailable).sort(),
-      errors: errors,
-      count: allUnavailable.size
-    })
-  };
+  try {
+    const unavailable = await getUnavailableDates(urls);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=900', // cache 15 min
+      },
+      body: JSON.stringify({ unavailable, property })
+    };
+  } catch(e) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: e.message })
+    };
+  }
 };
