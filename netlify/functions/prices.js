@@ -1,69 +1,60 @@
-const https = require('https');
+const fetch = require('node-fetch');
 
-const PRICELABS_API_KEY = process.env.PRICELABS_API_KEY;
-const LISTING_ID = '894682312121769350';
-const PMS = 'airbnb';
-const MARKUP = 1.15;
+// Supplément site direct vs plateformes
+// PriceLabs = prix net. On ajoute +8% pour couvrir nos frais
+// tout en restant sous les ~15% de commission Airbnb/Booking
+const MARKUP = 1.08;
 
-function fetchPriceLabs() {
-  return new Promise((resolve, reject) => {
-    const postData = JSON.stringify({ listings: [{ id: LISTING_ID, pms: PMS }] });
-    const options = {
-      hostname: 'api.pricelabs.co',
-      port: 443,
-      path: '/v1/listing_prices',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': PRICELABS_API_KEY,
-        'Content-Length': Buffer.byteLength(postData)
-      }
+exports.handler = async (event) => {
+  const { listing_id, pms } = event.queryStringParameters || {};
+  
+  if (!listing_id || !pms) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'listing_id et pms requis' })
     };
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try { resolve({ status: res.statusCode, data: JSON.parse(data) }); }
-        catch(e) { resolve({ status: res.statusCode, data: data }); }
-      });
-    });
-    req.on('error', reject);
-    req.write(postData);
-    req.end();
-  });
-}
+  }
 
-exports.handler = async function(event, context) {
+  const apiKey = process.env.PRICELABS_API_KEY;
+  if (!apiKey) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Clé API PriceLabs manquante' })
+    };
+  }
+
   try {
-    const result = await fetchPriceLabs();
+    const url = `https://api.pricelabs.co/v1/listing_prices?listing_id=${listing_id}&pms=${pms}`;
+    const res = await fetch(url, {
+      headers: { 'X-API-Key': apiKey }
+    });
 
-    if (result.status !== 200 || !Array.isArray(result.data) || result.data[0].error) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'PriceLabs error', details: result.data })
-      };
+    if (!res.ok) {
+      throw new Error(`PriceLabs API error: ${res.status}`);
     }
 
-    const listing = result.data[0];
-    const prices = {};
-
-    (listing.data || []).forEach(item => {
-      if (item.date && item.price && item.price > 0) {
-        prices[item.date] = Math.round(item.price * MARKUP);
-      }
-    });
+    const data = await res.json();
+    
+    // Appliquer le supplément +8% sur chaque prix
+    if (data.prices) {
+      data.prices = data.prices.map(p => ({
+        ...p,
+        price: Math.round(p.price * MARKUP)
+      }));
+    }
 
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=3600'
+        'Cache-Control': 'public, max-age=3600', // cache 1h
       },
-      body: JSON.stringify({ prices, count: Object.keys(prices).length })
+      body: JSON.stringify(data)
     };
-
-  } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+  } catch(e) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: e.message })
+    };
   }
 };
